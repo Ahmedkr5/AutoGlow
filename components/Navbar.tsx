@@ -1,17 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
-
 import CustomButton from "./CustomButton";
 
 const NavBar = () => (
   <header className='w-full  absolute z-10'>
-    <nav className='max-w-[1440px] mx-auto flex justify-between items-center sm:px-16 px-6 py-4 bg-transparent'>
+    <nav className='max-w-[1440px] mx-auto flex justify-between items-center sm:px-16 px-6 py-2 bg-transparent'>
       <Link href='/' className='flex justify-center items-center'>
         <Image
-          src='/logo.svg'
+          src='/car-logo.png'
           alt='logo'
-          width={118}
-          height={18}
+          width={150}
+          height={30}
           className='object-contain'
         />
       </Link>
