@@ -1,22 +1,39 @@
 import { CarProps, FilterProps } from "@/types";
 
+import { FilterProps } from "@/types";
+
 export async function fetchCars(filters: FilterProps) {
-  const { manufacturer, year, model, limit, fuel } = filters;
+  const { manufacturer, year, model, fuel } = filters;
 
-  const headers = {
-    "X-RapidAPI-Key": process.env.RAPIDAPI_KEY!,  
-    "X-RapidAPI-Host": "cars-by-api-ninjas.p.rapidapi.com",
-  };
+  // Required by the API
+  if (!manufacturer || !model) return [];
 
-  const url =
-    `https://cars-by-api-ninjas.p.rapidapi.com/v1/cars` +
-    `?make=${manufacturer}&year=${year}&model=${model}&limit=${limit}` +
-    (fuel ? `&fuel=${fuel}` : "");
+  const key = process.env.RAPIDAPI_KEY || ""; // 
+  if (!key) throw new Error("Missing RAPIDAPI_KEY");
 
-  const response = await fetch(url, { headers });
-  if (!response.ok) throw new Error(`Cars API error ${response.status}`);
+  const params = new URLSearchParams();
+  params.set("make", manufacturer);
+  params.set("model", model);
 
-  return response.json();
+  // Optional
+  if (year) params.set("year", String(year));
+  if (fuel) params.set("fuel", fuel);
+
+  // IMPORTANT: don't send `limit` (premium-only on your plan)
+  const url = `https://cars-by-api-ninjas.p.rapidapi.com/v1/cars?${params.toString()}`;
+
+  const res = await fetch(url, {
+    headers: {
+      "X-RapidAPI-Key": key,
+      "X-RapidAPI-Host": "cars-by-api-ninjas.p.rapidapi.com",
+    },
+    cache: "no-store",
+  });
+
+  const text = await res.text();
+  if (!res.ok) throw new Error(`Cars API ${res.status}: ${text}`);
+
+  return JSON.parse(text);
 }
 
 
